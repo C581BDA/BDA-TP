@@ -142,9 +142,6 @@ create table prereq
 	 foreign key (prereq_id) references course(course_id)
 	);
 
-
-/*
-
 delete from prereq;
 delete from time_slot;
 delete from advisor;
