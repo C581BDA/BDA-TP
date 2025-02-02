@@ -1,0 +1,82 @@
+-- 1
+SELECT dept_name FROM department WHERE budget = (SELECT MAX(budget) FROM department);
+
+-- 2
+SELECT name, salary FROM teacher WHERE salary > (SELECT AVG(salary) FROM teacher);
+
+-- 3
+SELECT t.name AS prof, s.name AS eleve, COUNT(*) AS nb_cours FROM teacher t
+JOIN teaches te ON t.id = te.id JOIN takes ta 
+ON (ta.course_id, ta.sec_id, ta.semester, ta.year) = (te.course_id, te.sec_id, te.semester, te.year) 
+JOIN student s ON ta.ID = s.ID GROUP BY t.name, s.name HAVING COUNT(*) >= 2;
+
+-- 4
+SELECT t.name AS prof, s.name AS eleve, sub.nb_cours FROM (SELECT te.id, ta.id AS student_id, 
+COUNT(*) AS nb_cours FROM teaches te JOIN takes ta 
+ON (ta.course_id, ta.sec_id, ta.semester, ta.year) = (te.course_id, te.sec_id, te.semester, te.year) 
+GROUP BY te.id, ta.id) AS sub JOIN teacher t ON t.id = sub.id JOIN student s ON s.id = sub.student_id
+WHERE sub.nb_cours >= 2;
+
+-- 5
+SELECT s.ID, s.name FROM student s 
+WHERE NOT EXISTS (SELECT 1 FROM takes t WHERE t.ID = s.ID AND t.year < 2010);
+
+-- 6
+SELECT id, name FROM teacher WHERE name LIKE 'E%';
+
+-- 7
+SELECT salary, name FROM teacher WHERE salary = 
+(SELECT DISTINCT salary FROM teacher ORDER BY salary DESC LIMIT 1 OFFSET 3);
+
+-- 8
+SELECT name, salary FROM (SELECT name, salary FROM teacher ORDER BY salary ASC LIMIT 3) AS ptit_salaire
+ORDER BY salary DESC;
+
+-- 9
+SELECT name FROM student 
+WHERE id IN (SELECT DISTINCT id FROM takes WHERE semester = 'Fall' AND year = 2009);
+
+-- 10
+SELECT name FROM student
+WHERE id = SOME (SELECT id FROM takes WHERE semester = 'Fall' AND year = 2009);
+
+-- 11
+SELECT DISTINCT s.name FROM student s 
+NATURAL JOIN takes t WHERE t.semester = 'Fall' AND t.year = 2009;
+-- Dans la version de sql que j'utilise je dois utiliser NATURAL JOIN pas NATURAL INNER JOIN 
+-- (donc si ça marche pas pour vous faut juste rajouter INNER)
+
+-- 12
+SELECT s.name FROM student s
+WHERE EXISTS (SELECT 1 FROM takes t WHERE t.ID = s.ID AND t.semester = 'Fall' AND t.year = 2009);
+
+-- 13
+SELECT DISTINCT s1.name AS E1, s2.name AS E2 FROM takes t1
+JOIN takes t2 ON t1.course_id = t2.course_id
+AND t1.sec_id = t2.sec_id AND t1.semester = t2.semester AND t1.year = t2.year
+AND t1.ID < t2.ID -- Pas de paire avec lui même ni de doublons (les deux en même temps)
+JOIN student s1 ON t1.ID = s1.ID JOIN student s2 ON t2.ID = s2.ID;
+
+-- 14
+SELECT t.name AS prof, COUNT(ta.ID) AS nb_eleve FROM teacher t
+JOIN teaches te ON t.ID = te.ID LEFT JOIN takes ta
+ON (te.course_id, te.sec_id, te.semester, te.year) = (ta.course_id, ta.sec_id, ta.semester, ta.year)
+GROUP BY t.ID, t.name ORDER BY nb_eleve DESC;
+
+--15
+SELECT t.name AS prof, COUNT(ta.ID) AS nb_eleve FROM teacher t
+LEFT JOIN teaches te ON t.ID = te.ID LEFT JOIN takes ta 
+ON (te.course_id, te.sec_id, te.semester, te.year) = (ta.course_id, ta.sec_id, ta.semester, ta.year)
+GROUP BY t.ID, t.name ORDER BY nb_eleve DESC;
+
+-- 17
+SELECT t.name AS prof, s.name AS eleve, COUNT(*) AS nb_cours FROM teacher t
+JOIN teaches te ON t.ID = te.ID
+JOIN takes ta ON (te.course_id, te.sec_id, te.semester, te.year) = (ta.course_id, ta.sec_id, ta.semester, ta.year)
+JOIN student s ON ta.ID = s.ID GROUP BY t.ID, s.ID ORDER BY prof;
+
+-- 18
+SELECT t.name AS prof, s.name AS eleve, COUNT(*) AS nb_cours FROM teacher t
+JOIN teaches te ON t.ID = te.ID
+JOIN takes ta ON (te.course_id, te.sec_id, te.semester, te.year) = (ta.course_id, ta.sec_id, ta.semester, ta.year)
+JOIN student s ON ta.ID = s.ID GROUP BY t.ID, s.ID HAVING COUNT(*) >= 2 ORDER BY prof;
