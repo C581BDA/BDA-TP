@@ -1,0 +1,107 @@
+CREATE TABLE emp(
+    matr NUMBER(10) NOT NULL, 
+    nom VARCHAR2(50) NOT NULL, 
+    sal number(7, 2), 
+    adresse VARCHAR2(96), 
+    dep NUMBER(10) NOT NULL, 
+    CONSTRAINT emp_pk PRIMARY KEY(matr)
+);
+
+-- 1
+SET SERVEROUTPUT ON;
+DECLARE
+    v_employe emp%ROWTYPE;
+BEGIN
+    v_employe.matr := 4;
+    v_employe.nom := ’Youcef ’;
+    v_employe.sal := 2500;
+    v_employe.adresse := ’avenue de la République ’;
+    v_employe.dep := 92002;
+    INSERT into emp VALUES v_employe;
+    COMMIT;
+END;
+
+On insère un employé, dont les valeurs des attributs matr, nom, sal, adresse et dep sont respectivement 4, Youcef, 2500, avenue de la République et 92002.
+
+-- 2
+DECLARE
+    nb_lignes NUMBER;
+BEGIN
+    DELETE FROM emp WHERE dep IS NOT NULL;
+    nb_lignes := SQL%ROWCOUNT;
+    DBMS_OUTPUT.PUT_LINE(’Nombre de n-uplets supprimés : ’ || nb_lignes);
+    COMMIT;
+END;
+
+-- 3
+DECLARE
+    v_sal EMP.sal%TYPE;
+    v_tot NUMBER := 0;
+    CURSOR c_sal IS
+        SELECT sal FROM emp;
+BEGIN
+    OPEN c_sal;
+    LOOP
+        FETCH c_sal INTO v_sal;
+        EXIT WHEN c_sal%NOTFOUND;
+        v_tot := v_tot + v_sal;
+    END LOOP;
+    CLOSE c_sal;
+    DBMS_OUTPUT.PUT_LINE(’Total : ’ || v_tot);
+END;
+
+-- 4
+DECLARE
+    v_sal EMP.sal%TYPE;
+    v_tot NUMBER := 0;
+    v_nb NUMBER := 0;
+CURSOR c_sal IS
+        SELECT sal FROM emp;
+BEGIN
+    OPEN c_sal;
+    LOOP
+        FETCH c_sal INTO v_sal;
+        EXIT WHEN c_sal%NOTFOUND;
+        v_tot := v_tot + v_sal;
+        v_nb := v_nb + 1;
+    END LOOP;
+    CLOSE c_sal;
+    DBMS_OUTPUT.PUT_LINE(’Total : ’ || v_tot);
+    DBMS_OUTPUT.PUT_LINE(’Moyenne : ’ | | v_tot / v_nb);
+END;
+Pour avoir la moyenne, il suffit de diviser par le nombre de valeur.
+
+-- 5
+DECLARE
+    v_tot NUMBER := 0;
+    v_nb NUMBER := 0;
+BEGIN
+    FOR i IN (SELECT sal FROM emp) LOOP
+        v_tot := v_tot + i.sal;
+        v_nb := v_nb + 1;
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE(’Total : ’ || v_tot);
+    DBMS_OUTPUT.PUT_LINE(’Moyenne : ’ | | v_tot / v_nb);
+END;
+
+-- 6
+DECLARE
+    CURSOR c(p_dep EMP.dep%TYPE) IS
+        SELECT nom FROM emp WHERE dep = p_dep;
+BEGIN
+    OPEN c_emp(92000);
+    LOOP
+        FETCH c_emp INTO v_nom;
+        EXIT WHEN c_emp % NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(’Dep 1 : ’ || v_emp.nom);
+    END LOOP;
+    CLOSE c_emp;
+
+    OPEN c_emp(75000);
+    LOOP
+        FETCH c_emp INTO v_nom;
+        EXIT WHEN c_emp % NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(’Dep 2 : ’ || v_emp.nom);
+    END LOOP;
+    CLOSE c_emp;
+END;
