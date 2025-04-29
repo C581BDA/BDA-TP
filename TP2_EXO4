@@ -1,0 +1,153 @@
+import itertools
+
+myrelations = [{"A", "B", "C", "G", "H", "I"}, {"X", "Y"}]
+mydependencies = [ [ {"A"}, {"B"} ], [ {"A"}, {"C"} ], [ {"C", "G"}, {"H"} ], [ {"C", "G"}, {"I"} ], [ {"B"}, {"H"} ], [{"H"}, {"R"}]]
+
+
+# Question 1 (donné par le prof)
+def printDependencies(dep_liste):
+    print("My Dependencies :")
+    for alpha , beta in dep_liste:
+        print ("\t", alpha , " --> ", beta)
+
+
+# Question 2 (donné par le prof)
+def printRelations(rel_liste):
+    print("My Relations :")
+    for R in rel_liste:
+        print ("\t", R)
+
+
+# Question 3 (donné par le prof)
+def powerSet(inputset):
+    _result = []
+    for r in range(1, len (inputset) + 1):
+        _result = _result + list(map(set, itertools.combinations(inputset, r)))
+    return _result
+
+
+# Question 4
+def fermeture(dep_liste, attribut_liste):
+    _fermeture = set(attribut_liste)
+    _fermeture2 = set()
+
+    while(_fermeture != _fermeture2):
+        _fermeture2 = _fermeture.copy()
+        _powset = powerSet(_fermeture)
+
+        for i, j in dep_liste:
+            if i in _powset:
+                _fermeture.update(j)
+    return _fermeture
+
+
+# Question 5
+# Bon avec l'exemple il y en a beaucoup mais c'était à prévoir car il y a énormément de combinaisons possibles.
+def cloture(dep_liste):
+    R = set ()
+    for a,b in dep_liste: R.update(a | b)
+    
+    _cloture = []
+    
+    for i in powerSet(R) :
+        for j in powerSet(fermeture(dep_liste,i)) :
+            _cloture.append([i, j])
+    return _cloture
+
+
+# Question 6
+# On vérifie que les a implique b à l'aide de la fermeture
+def implique(dep_liste, a, b):
+    return b.issubset(fermeture(dep_liste, a))
+
+# Question 7
+# On vérifie que chaque élément de la relation soit bien un élément de la fermeture de l'attribut (et donc que l'attribut soit super-clé)
+def supercle(dep_liste, attribut, relation):
+    return relation.issubset(fermeture(dep_liste, attribut))
+
+# Question 8
+# Suffit de vérifier que c'est une super clé et que quand on retire un élément ça ne l'est plus
+def candidate(dep_liste, attribut, relation):
+    if not(supercle(dep_liste, attribut, relation)) :
+        return False
+    else :
+        for i in attribut:
+            temp = set(attribut)
+            temp.discard(i)
+            if supercle(dep_liste, temp, relation):
+                return False
+    return True
+
+
+# Question 9
+# Bon bah on teste toutes les possibilités... Bon par contre il y a peut-être mieux d'un point de vue complexité
+def liste_candidate(dep_liste, relation):
+    L = []
+    for i in powerSet(relation):
+        if candidate(dep_liste, i, relation) :
+            L.append(i)
+    return L
+
+
+# Question 10
+# Bon bah on teste toutes les possibilités encore :) ...
+def liste_supercle(dep_liste, relation):
+    L = []
+    for i in powerSet(relation):
+        if supercle(dep_liste, i, relation) :
+            L.append(i)
+    return L
+
+
+import random
+# Question 11
+# Euh bah on en pioche une dans la liste c'est tout...
+def random_candidate(dep_liste, relation):
+    return random.choice(liste_candidate(dep_liste, relation))
+
+
+# Question 12
+# On vérifie que chaque élément de gauche des DF est une super clé.
+def BCNF(dep_liste, relation):
+    for a, b in dep_liste:
+        if not supercle(dep_liste, a, relation) :
+            return False
+    return True
+
+
+if (__name__ == "__main__"):
+
+    _bool = ""
+
+    #printDependencies(mydependencies)
+    #printRelations(myrelations)
+
+    #choisir le result que vous voulez (chacun correspond à une question)
+    #_result = powerSet({'A', 'B', 'C'})
+    #_result = fermeture(mydependencies, {'B', 'G'})
+    #_result = cloture(mydependencies)
+
+    #_bool = implique(mydependencies, {'A'}, {'H'})
+    #_bool = supercle(mydependencies, {'A', 'G'}, myrelations[0])
+
+    #_bool = candidate(mydependencies, {'A'}, myrelations[0])
+    #_bool = candidate(mydependencies, {'A', 'G'}, myrelations[0])
+    #_bool = candidate(mydependencies, {'A', 'C', 'G'}, myrelations[0])
+
+    #_result = liste_candidate(mydependencies, myrelations[0])
+    #_result = liste_supercle(mydependencies, myrelations[0])
+    #_result = random_candidate(mydependencies, myrelations[0])
+
+    #_bool = BCNF(mydependencies, myrelations[0])
+
+    if '_result' in locals():
+       pass
+    else:
+        _result = []
+
+    for i in _result:
+        print("\t", i)
+
+    print("\t", _bool)
+
+    exit(0)
