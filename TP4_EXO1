@@ -1,0 +1,82 @@
+Question 1 :
+
+SET SERVEROUTPUT ON;
+DECLARE
+    a NUMBER;
+    b NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT('Entrez le premier entier : ');
+    a := &a;
+
+    DBMS_OUTPUT.PUT('Entrez le deuxième entier : ');
+    b := &b;
+
+    DBMS_OUTPUT.PUT_LINE('La somme est : ' || (a + b));
+END;
+/
+
+Question 2 :
+
+DECLARE
+    i NUMBER := 0;
+    nombre NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT('Entrez un nombre : ');
+    nombre := &nombre;
+
+    WHILE i <= 10 LOOP
+        DBMS_OUTPUT.PUT_LINE(nombre || ' x ' || i || ' = ' || (nombre * i));
+        i := i + 1;
+    END LOOP;
+END;
+/
+
+Question 3 :
+
+CREATE OR REPLACE FUNCTION puissance(x IN NUMBER, n IN NUMBER) RETURN NUMBER IS
+BEGIN
+    IF n = 0 THEN
+        RETURN 1;
+    ELSE
+        RETURN puissance(x, n-1) * x;
+    END IF;
+END;
+/
+
+Question 4 :
+
+CREATE TABLE IF NOT EXISTS resultatFactoriel(res IN NUMBER PRIMARY KEY, factorielle NUMBER);
+
+DECLARE
+    a NUMBER := 1;
+    i NUMBER := 1;
+    n NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT('Entrez un nombre > 0 : ');
+    n := &n;
+
+    WHILE i <= n LOOP
+        a := a * i;
+        i := i + 1;
+    END LOOP;
+    INSERT INTO resultatFactoriel(res, factorielle) VALUES (n, a);
+    DBMS_OUTPUT.PUT_LINE(n || '! = ' || a);
+END;
+/
+
+Question 5 :
+
+CREATE TABLE IF NOT EXISTS resultatFactoriel(res IN NUMBER PRIMARY KEY, factorielle NUMBER);
+
+DECLARE
+    a NUMBER := 1;
+    n NUMBER := 1;
+BEGIN
+    WHILE n <= 20 LOOP
+        a := a * n;
+        INSERT INTO resultatFactoriel(res, factorielle) VALUES (n, a);
+        DBMS_OUTPUT.PUT_LINE(n || '! = ' || a);
+        n := n + 1;
+    END LOOP;
+END;
+/
