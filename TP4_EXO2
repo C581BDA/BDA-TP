@@ -21,8 +21,6 @@ BEGIN
     COMMIT;
 END;
 
-On insère un employé, dont les valeurs des attributs matr, nom, sal, adresse et dep sont respectivement 4, Youcef, 2500, avenue de la République et 92002.
-
 -- 2
 DECLARE
     nb_lignes NUMBER;
@@ -69,7 +67,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(’Total : ’ || v_tot);
     DBMS_OUTPUT.PUT_LINE(’Moyenne : ’ | | v_tot / v_nb);
 END;
-Pour avoir la moyenne, il suffit de diviser par le nombre de valeur.
 
 -- 5
 DECLARE
