@@ -1,0 +1,38 @@
+CREATE TABLE IF NOT EXISTS CLIENT(
+    ID NUMBER PRIMARY KEY,
+    NOM VARCHAR2(50),
+    ADRESSE VARCHAR2(100),
+    EMAIL VARCHAR2(100)
+);
+
+
+
+CREATE OR REPLACE PACKAGE pkg_c IS
+    PROCEDURE add_c(p_id NUMBER, p_nom VARCHAR2);
+    PROCEDURE add_c(p_id NUMBER, p_nom VARCHAR2, p_adresse VARCHAR2, p_email VARCHAR2);
+END plg_c;
+
+
+
+    PROCEDURE add_c(p_id NUMBER, p_nom VARCHAR2) IS
+    BEGIN
+        INSERT INTO client (ID, NOM)
+        VALUES (p_id, p_nom);
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('Attention un client a déjà cet id !');
+        WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROOOOOOORRR : ' || SQLERRM);
+    END;
+
+    PROCEDURE add_c(p_id NUMBER, p_nom VARCHAR2, p_adresse VARCHAR2, p_email VARCHAR2) IS
+    BEGIN
+        INSERT INTO client (ID, NOM, ADRESSE, EMAIL)
+        VALUES (p_id, p_nom, p_adresse, p_email);
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('Attention un client a déjà cet id !');
+        WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROOOOOOORRR : ' || SQLERRM);
+    END;
+END pkg_c;
